@@ -16,10 +16,10 @@ pygame.display.set_caption("First game title")
 clock = pygame.time.Clock()
 
 img = pygame.image.load('car.png')
-img_w = img.get_width()
+car_w = img.get_width()
 
-def things(T_X, T_Y, T_W, T_H):
-    pygame.draw.rect(display, BLACK, (T_X, T_Y, T_W, T_H))
+def blocks(color, T_X, T_Y, T_W, T_H):
+    pygame.draw.rect(display, color, (T_X, T_Y, T_W, T_H))
 
 def car(x, y):
     display.blit(img, (x,y))
@@ -45,6 +45,12 @@ def game_loop():
     car_y = SCREEN_H * 0.85
     car_x_change = 0
 
+    blk_start_x = random.randrange(0, SCREEN_W)
+    blk_start_y = -600
+    blk_speed = 7
+    blk_w = 100
+    blk_h = 100
+
     while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -64,10 +70,25 @@ def game_loop():
         
         car_x += car_x_change
         display.fill(WHITE)
+
+        blocks(BLACK, blk_start_x, blk_start_y, blk_w, blk_h)
+        blk_start_y += blk_speed
+        
         car(car_x, car_y)
 
-        if car_x > SCREEN_W - img_w or car_x < 0:
+        if car_x > SCREEN_W - car_w or car_x < 0:
             crash() 
+
+        if blk_start_y > SCREEN_H:
+            blk_start_y = 0 - blk_h
+            blk_start_x = random.randrange(0, SCREEN_W)
+
+        if car_y < blk_start_y + blk_h:
+            print('y crossover')
+
+            if car_x > blk_start_x and car_x < blk_start_x + blk_w or car_x + car_w > blk_start_x and car_x + car_w < blk_start_x + blk_w:
+                print('x crossover')
+                crash()
 
         pygame.display.update()
         clock.tick(60)
